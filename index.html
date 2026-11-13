@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>LifeAssist AI – Smart Home Budget Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Icons + Charts + Excel -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="static/css/styles.css" />
+</head>
+
+<body>
+  <!-- ================= NAVBAR ================= -->
+  <nav>
+    <div class="logo-section">
+      <i class="fas fa-robot logo-icon"></i>
+      <h1>LifeAssist AI</h1>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <a href="#" onclick="showSection('home')" data-section="home">
+        <i class="fas fa-home"></i> Home
+      </a>
+      <a href="#" onclick="showSection('features')" data-section="features">
+        <i class="fas fa-star"></i> Features
+      </a>
+      <a href="#" onclick="showSection('demo')" data-section="demo">
+        <i class="fas fa-list"></i> Expense Tracker
+      </a>
+      <a href="#" onclick="showSection('dashboard')" data-section="dashboard">
+        <i class="fas fa-chart-pie"></i> Dashboard
+      </a>
+      <a href="#" onclick="showSection('planner')" data-section="planner">
+        <i class="fas fa-sliders-h"></i> AI Planner
+      </a>
+      <a href="#" onclick="showSection('about')" data-section="about">
+        <i class="fas fa-question-circle"></i> About
+      </a>
+      <a href="#" onclick="showSection('contact')" data-section="contact">
+        <i class="fas fa-envelope"></i> Contact
+      </a>
+      <div id="userInfo" style="display:none;align-items:center;gap:0.5rem;margin-left:0.5rem;">
+        <span class="pill">
+          <i class="fas fa-user"></i> <span id="userName"></span>
+        </span>
+        <button class="btn" style="background:#d9776f;" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- =============== AUTH SECTION =============== -->
+  <section id="auth" class="section active">
+    <div class="card">
+      <h2 style="text-align:center;margin-top:0;">
+        <i class="fas fa-user-shield"></i> Login / Sign Up
+      </h2>
+      <p style="text-align:center;color:var(--text-muted);margin-bottom:1.5rem;">
+        Create an account to save expenses and see smart AI recommendations.
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;">
+        <!-- Login -->
+        <div class="card" id="loginCard" style="margin-bottom:0;">
+          <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+          <div id="login-error"></div>
+          <form id="login-form">
+            <div class="input-group">
+              <label for="login-email"><i class="fas fa-envelope"></i> Email</label>
+              <input type="email" id="login-email" required />
+            </div>
+            <div class="input-group">
+              <label for="login-password"><i class="fas fa-lock"></i> Password</label>
+              <input type="password" id="login-password" required />
+            </div>
+            <button class="btn" type="submit" id="loginBtn" style="width:100%;">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+          </form>
+          <div class="auth-toggle" style="margin-top:0.6rem;font-size:0.9rem;">
+            Don't have an account? <a style="cursor:pointer;color:var(--primary);" onclick="showSignup()">Sign up
+              here</a>
+          </div>
+        </div>
+
+        <!-- Signup -->
+        <div class="card" id="signupCard" style="display:none;margin-bottom:0;">
+          <h2><i class="fas fa-user-plus"></i> Sign Up</h2>
+          <div id="signup-error"></div>
+          <form id="signup-form">
+            <div class="input-group">
+              <label for="signup-name"><i class="fas fa-user"></i> Full Name</label>
+              <input type="text" id="signup-name" required />
+            </div>
+            <div class="input-group">
+              <label for="signup-email"><i class="fas fa-envelope"></i> Email</label>
+              <input type="email" id="signup-email" required />
+            </div>
+            <div class="input-group">
+              <label for="signup-password"><i class="fas fa-lock"></i> Password</label>
+              <input type="password" id="signup-password" required minlength="6" />
+            </div>
+            <button class="btn" type="submit" id="signupBtn" style="width:100%;">
+              <i class="fas fa-user-plus"></i> Sign Up
+            </button>
+          </form>
+          <div class="auth-toggle" style="margin-top:0.6rem;font-size:0.9rem;">
+            Already have an account? <a style="cursor:pointer;color:var(--primary);" onclick="showLogin()">Login
+              here</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== HOME =============== -->
+  <section id="home" class="section">
+    <div class="hero">
+      <div class="hero-logo">
+        <i class="fas fa-hands-helping"></i>
+      </div>
+      <h2>LifeAssist AI – The Smart Tech Buddy for Every Home</h2>
+      <p>Helping you manage money, bills, and energy smartly.</p>
+      <div class="btn-group" style="justify-content:center;">
+        <button class="btn" onclick="showSection('demo')">
+          <i class="fas fa-rocket"></i> Get Started
+        </button>
+        <button class="btn" onclick="showSection('features')">
+          <i class="fas fa-star"></i> Explore Features
+        </button>
+        <button class="btn" onclick="showSection('contact')">
+          <i class="fas fa-envelope"></i> Contact Us
+        </button>
+      </div>
+      <div class="scroll-indicator" onclick="showSection('features')">
+        <i class="fas fa-chevron-down"></i>
+      </div>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-lightbulb"></i> What is LifeAssist AI?</h3>
+      <p>
+        LifeAssist AI is a smart assistant tool for families to track expenses, manage
+        bills, and get money-saving tips. Designed for offline and low-income users.
+      </p>
+    </div>
+  </section>
+
+  <!-- =============== FEATURES =============== -->
+  <section id="features" class="section">
+    <div class="card" style="text-align:center;margin-bottom:2rem;">
+      <h2><i class="fas fa-star"></i> Why People Love LifeAssist AI</h2>
+      <p style="color:var(--text-muted);font-size:1.1rem;">
+        A smart, simple and friendly assistant designed for real homes and real budgets.
+      </p>
+    </div>
+
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-list"></i></div>
+        <h3>Expense Tracking</h3>
+        <p>Quickly record your spendings with a clean and fast interface.</p>
+        <span class="pill-tag">Core</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+        <h3>Visual Dashboard</h3>
+        <p>Beautiful charts showing category insights and monthly patterns.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+        <h3>Smart Bill Alerts</h3>
+        <p>Get friendly reminders when electricity or other bills are due.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-brain"></i></div>
+        <h3>AI Budget Coach</h3>
+        <p>See recommended spending split & forecast based on your habits.</p>
+        <span class="pill-tag">AI Insight</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-sliders-h"></i></div>
+        <h3>What-If AI Planner</h3>
+        <p>Reduce expenses with sliders and instantly see savings impact.</p>
+        <span class="pill-tag">Interactive</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-file-export"></i></div>
+        <h3>Offline-Friendly</h3>
+        <p>Export to CSV or Excel. Works even without continuous internet.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+        <h3>Secure Login</h3>
+        <p>Local machine storage ensures privacy and data protection.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-cloud-download-alt"></i></div>
+        <h3>Data Backup</h3>
+        <p>Import/export anytime — perfect for college submissions.</p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- =============== ABOUT =============== -->
+  <section id="about" class="section">
+    <div class="card">
+      <h2><i class="fas fa-question-circle"></i> About LifeAssist AI</h2>
+
+      <p style="margin-top:0.8rem;font-size:1rem;color:var(--text-muted);">
+        LifeAssist AI was built to help families understand their financial habits
+        in a simple and friendly manner. Most people do not track where their money goes,
+        which leads to confusion, stress, and unplanned expenses.
+      </p>
+
+      <h3 style="margin-top:1.5rem;">🎯 Our Mission</h3>
+      <ul style="margin-left:1rem;">
+        <li>Make budget tracking simple for EVERY user</li>
+        <li>Provide AI-style recommendations without internet requirement</li>
+        <li>Support low-income and offline households</li>
+        <li>Help students learn full-stack development + analytics</li>
+      </ul>
+
+      <h3 style="margin-top:1.5rem;">💼 Technologies Used</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:0.5rem;">
+        <span class="pill"><i class="fas fa-server"></i> Flask Backend</span>
+        <span class="pill"><i class="fas fa-database"></i> SQLite DB</span>
+        <span class="pill"><i class="fas fa-code"></i> JavaScript</span>
+        <span class="pill"><i class="fas fa-chart-pie"></i> Chart.js</span>
+        <span class="pill"><i class="fas fa-mobile"></i> Responsive UI</span>
+        <span class="pill"><i class="fas fa-brain"></i> AI Planner Logic</span>
+      </div>
+
+      <h3 style="margin-top:1.5rem;">📘 Educational Value</h3>
+      <p>
+        This project demonstrates core skills needed in modern development:
+      </p>
+      <ul style="margin-left:1rem;">
+        <li>Authentication & secure session handling</li>
+        <li>REST APIs and CRUD operations</li>
+        <li>Data visualization and analytics</li>
+        <li>AI-style budgeting logic & financial insights</li>
+        <li>Offline-friendly data management</li>
+      </ul>
+
+      <p style="margin-top:1rem;color:var(--text-muted);">
+        Perfect for college submissions, practical exams, or portfolio showcasing.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- =============== DEMO / EXPENSE TRACKER =============== -->
+  <section id="demo" class="section">
+    <div class="card">
+      <h2><i class="fas fa-list"></i> Expense Manager</h2>
+      <p style="color:var(--text-muted);margin-bottom:1rem;">
+        Add your daily expenses here. The dashboard and AI coach will use this data.
+      </p>
+
+      <form id="expense-form">
+        <div class="input-group">
+          <label for="expense-name"><i class="fas fa-pen"></i> Expense Name</label>
+          <input type="text" id="expense-name" required />
+        </div>
+        <div class="input-group">
+          <label for="expense-category"><i class="fas fa-list"></i> Category</label>
+          <select id="expense-category">
+            <option>Electricity</option>
+            <option>Groceries</option>
+            <option>Rent</option>
+            <option>Transport</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="expense-amount"><i class="fas fa-rupee-sign"></i> Amount (₹)</label>
+          <input type="number" id="expense-amount" required />
+        </div>
+        <div class="input-group">
+          <label for="expense-date"><i class="fas fa-calendar"></i> Date</label>
+          <input type="date" id="expense-date" required />
+        </div>
+        <input type="hidden" id="edit-id" />
+        <button class="btn" type="submit" id="submitBtn">
+          <i class="fas fa-plus"></i> Add Expense
+        </button>
+        <button class="btn" type="button" onclick="cancelEdit()" id="cancelBtn"
+          style="display:none;background:#d9776f;">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+      </form>
+
+      <h3 style="margin-top:1.5rem;"><i class="fas fa-list-ul"></i> Expenses</h3>
+      <div id="expenses-loading" class="loading" style="display:none;">
+        <i class="fas fa-spinner fa-spin"></i> Loading expenses…
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="table" id="expenses-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div id="category-bars" style="margin-top:1rem;"></div>
+      <div id="summaryCards" style="margin-top:0.8rem;"></div>
+      <div id="suggestion" class="suggestion"></div>
+    </div>
+  </section>
+
+  <!-- =============== DASHBOARD =============== -->
+  <section id="dashboard" class="section">
+    <div class="card">
+      <h2><i class="fas fa-chart-pie"></i> Spending Dashboard</h2>
+      <p style="color:var(--text-muted);">
+        Visual analysis of your spending by category and over time.
+      </p>
+      <div class="features-grid" style="margin-top:1rem;">
+        <div class="feature-card" style="text-align:left;">
+          <h3 style="margin-bottom:1rem;">
+            <i class="fas fa-utensils"></i> Category Breakdown
+          </h3>
+          <canvas id="categoryPie" height="220"></canvas>
+        </div>
+        <div class="feature-card" style="text-align:left;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+            <h3 style="margin:0;">
+              <i class="fas fa-wave-square"></i> Expense Trend
+            </h3>
+            <div>
+              <select id="granularitySelect" onchange="loadTrendChart()"
+                style="padding:0.4rem;border-radius:0.6rem;border:1px solid rgba(212,163,115,0.3);">
+                <option value="monthly">Monthly</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+          </div>
+          <canvas id="trendLine" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Budget Coach -->
+    <div class="card" id="aiBudgetCard">
+      <h3><i class="fas fa-brain"></i> AI Budget Coach</h3>
+      <p style="color:var(--text-muted);font-size:0.95rem;">
+        Smart insights, forecast and suggested budget split based on your spending.
+      </p>
+      <div class="summary-cards" id="aiBudgetSummary"></div>
+      <div id="aiBudgetInsights" style="margin-top:1rem;"></div>
+    </div>
+
+    <!-- Export / Import -->
+    <div class="card">
+      <h3><i class="fas fa-file-export"></i> Data Export / Import</h3>
+      <div class="btn-group" style="justify-content:flex-start;">
+        <button class="btn" onclick="downloadData('csv')">
+          <i class="fas fa-download"></i> Download CSV
+        </button>
+        <button class="btn" onclick="downloadData('xlsx')">
+          <i class="fas fa-file-excel"></i> Download Excel
+        </button>
+        <label class="btn" for="importFile" style="cursor:pointer;background:#5b7a4a;">
+          <i class="fas fa-upload"></i> Import Data
+        </label>
+        <input type="file" id="importFile" accept=".csv,.xlsx" style="display:none;" onchange="importData(event)" />
+      </div>
+      <div id="importStatus"></div>
+      <p style="color:var(--text-muted);margin-top:0.5rem;">
+        CSV headers must include: <b>name, category, amount, date (YYYY-MM-DD)</b>.
+      </p>
+    </div>
+  </section>
+
+  <!-- =============== AI PLANNER TAB =============== -->
+  <section id="planner" class="section">
+    <div class="card">
+      <h2><i class="fas fa-sliders-h"></i> AI Budget Planner</h2>
+      <p style="color:var(--text-muted);font-size:0.95rem;">
+        Simulate how reducing key expenses changes your monthly spend, forecast and budget health.
+      </p>
+
+      <!-- Baseline snapshot -->
+      <div class="summary-cards" id="plannerBaselineSummary" style="margin-bottom:1rem;"></div>
+
+      <!-- What-if sliders -->
+      <div class="card" style="margin-top:0.5rem;margin-bottom:1rem;">
+        <h3 style="margin-top:0;margin-bottom:0.5rem;">
+          <i class="fas fa-sliders-h"></i> What-If Sliders
+        </h3>
+        <p style="color:var(--text-muted);font-size:0.85rem;">
+          Move the sliders and see how your budget changes.
+        </p>
+
+        <div class="whatif-slider">
+          <div class="whatif-slider-header">
+            <span>Reduce Groceries by</span>
+            <span><span id="planner-groceries-value">0</span>%</span>
+          </div>
+          <input type="range" id="planner-groceries" min="0" max="50" value="0"
+            oninput="updatePlannerSliderLabel('groceries')" />
+        </div>
+
+        <div class="whatif-slider">
+          <div class="whatif-slider-header">
+            <span>Reduce Electricity by</span>
+            <span><span id="planner-electricity-value">0</span>%</span>
+          </div>
+          <input type="range" id="planner-electricity" min="0" max="50" value="0"
+            oninput="updatePlannerSliderLabel('electricity')" />
+        </div>
+
+        <div class="whatif-slider">
+          <div class="whatif-slider-header">
+            <span>Reduce Transport by</span>
+            <span><span id="planner-transport-value">0</span>%</span>
+          </div>
+          <input type="range" id="planner-transport" min="0" max="50" value="0"
+            oninput="updatePlannerSliderLabel('transport')" />
+        </div>
+      </div>
+
+      <!-- Planner summary + chart -->
+      <div class="summary-cards" id="plannerSummary" style="margin-bottom:1rem;"></div>
+      <div class="card" style="margin-top:0;">
+        <h3 style="margin-top:0;margin-bottom:0.8rem;">
+          <i class="fas fa-chart-bar"></i> Before vs After
+        </h3>
+        <canvas id="plannerChart" height="220"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== CONTACT =============== -->
+  <section id="contact" class="section">
+    <div class="card">
+      <h2><i class="fas fa-envelope"></i> Contact & Feedback</h2>
+      <p style="color:var(--text-muted);">
+        This is a college project. If you have suggestions to improve UI or AI logic,
+        please share them.
+      </p>
+      <form id="contact-form">
+        <div class="input-group">
+          <label for="contact-name"><i class="fas fa-user"></i> Name</label>
+          <input type="text" id="contact-name" required />
+        </div>
+        <div class="input-group">
+          <label for="contact-email"><i class="fas fa-envelope"></i> Email</label>
+          <input type="email" id="contact-email" required />
+        </div>
+        <div class="input-group">
+          <label for="contact-message"><i class="fas fa-comment"></i> Message</label>
+          <textarea id="contact-message" rows="4" required></textarea>
+        </div>
+        <button class="btn" type="submit">
+          <i class="fas fa-paper-plane"></i> Send Message
+        </button>
+      </form>
+      <div id="contact-status" style="margin-top:0.7rem;"></div>
+    </div>
+  </section>
+
+  <footer style="text-align:center;padding:1rem 0 2rem;color:var(--text-muted);font-size:0.85rem;">
+    &copy; <span id="yearSpan"></span> LifeAssist AI – College Project
+  </footer>
+
+  <!-- ===================== JAVASCRIPT MODULES ===================== -->
+  <!-- Load order matters: utils first (global state), then api, then feature modules, main last -->
+  <script src="static/js/utils.js"></script>
+  <script src="static/js/api.js"></script>
+  <script src="static/js/navigation.js"></script>
+  <script src="static/js/expenses.js"></script>
+  <script src="static/js/dashboard.js"></script>
+  <script src="static/js/budget-coach.js"></script>
+  <script src="static/js/planner.js"></script>
+  <script src="static/js/export-import.js"></script>
+  <script src="static/js/auth.js"></script>
+  <script src="static/js/main.js"></script>
+</body>
+
+</html>

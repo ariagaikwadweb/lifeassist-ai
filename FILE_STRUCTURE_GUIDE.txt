@@ -1,0 +1,139 @@
+================================================================================
+                    LIFEASSIST AI - FILE STRUCTURE DOCUMENTATION
+================================================================================
+
+This document maps each feature/functionality to its corresponding file for
+easy code review by supervisors.
+
+================================================================================
+                                BACKEND (Python/Flask)
+================================================================================
+
+📁 app.py
+   └── Main Flask application entry point
+   └── Registers all blueprints
+   └── Initializes database on startup
+
+📁 config.py
+   └── DATABASE_PATH configuration
+   └── Flask settings (DEBUG, HOST, PORT)
+
+📁 routes/auth.py
+   └── /api/signup      - User registration
+   └── /api/login       - User login with email/password
+   └── /api/logout      - User logout (clears session)
+   └── /api/verify      - Verify auth token, get user info
+
+📁 routes/expenses.py
+   └── GET  /api/expenses           - Fetch all expenses for user
+   └── POST /api/expenses           - Add new expense
+   └── PUT  /api/expenses/<id>      - Update existing expense
+   └── DELETE /api/expenses/<id>    - Delete expense
+
+📁 routes/statistics.py
+   └── GET /api/statistics          - Get total, category breakdown, count
+   └── GET /api/statistics/timeseries - Get monthly/weekly expense trends
+
+📁 routes/export_import.py
+   └── GET  /api/export  - Export expenses to CSV or Excel (.xlsx)
+   └── POST /api/import  - Import expenses from CSV or Excel file
+
+📁 utils/db.py
+   └── get_db()    - Get SQLite database connection
+   └── init_db()   - Create users, expenses, sessions tables
+
+📁 utils/helpers.py
+   └── hash_password()  - SHA256 password hashing
+   └── verify_token()   - Validate session token, return user_id
+
+================================================================================
+                              FRONTEND (HTML/CSS/JavaScript)
+================================================================================
+
+📁 index.html
+   └── Main HTML structure
+   └── All sections: Auth, Home, Features, About, Demo, Dashboard, Planner, Contact
+   └── Links to external CSS and JS files
+
+📁 static/css/styles.css
+   └── All CSS styles
+   └── CSS variables (colors, fonts, shadows)
+   └── Dark mode styles
+   └── Responsive mobile styles
+   └── Component styles (cards, buttons, tables, forms)
+
+📁 static/js/utils.js
+   └── API_URL constant
+   └── Global state variables (authToken, currentUser, expenses)
+   └── Chart instances (categoryChart, trendChart, plannerChart)
+   └── Baseline data for planner
+
+📁 static/js/api.js
+   └── apiCall() - Universal API helper function for all HTTP requests
+
+📁 static/js/auth.js
+   └── loadUser()              - Load user from localStorage on page load
+   └── Login form handler      - Handle login form submission
+   └── Signup form handler     - Handle signup form submission
+   └── showSignup()            - Switch to signup card
+   └── showLogin()             - Switch to login card
+   └── logout()                - Logout user, clear session
+
+📁 static/js/navigation.js
+   └── showSection()   - Navigate between sections (home, demo, dashboard, etc.)
+   └── toggleMenu()    - Toggle mobile hamburger menu
+   └── toggleTheme()   - Toggle dark/light mode
+   └── Theme initialization from localStorage
+
+📁 static/js/expenses.js
+   └── loadExpenses()     - Fetch expenses from API
+   └── renderExpenses()   - Display expenses in table
+   └── renderSummary()    - Show summary cards and category bars
+   └── deleteExpense()    - Delete an expense
+   └── editExpense()      - Fill form for editing
+   └── cancelEdit()       - Cancel edit mode
+   └── Expense form submit handler (add/update)
+
+📁 static/js/dashboard.js
+   └── loadDashboard()     - Load all dashboard data
+   └── renderCategoryPie() - Render pie chart (category breakdown)
+   └── loadTrendChart()    - Render line chart (monthly/weekly trend)
+
+📁 static/js/budget-coach.js
+   └── RECOMMENDED_RANGES       - Budget percentage guidelines
+   └── mapCategoryToProfile()   - Map expense categories to profile keys
+   └── simpleLinearForecast()   - Predict next month spending
+   └── loadBudgetAI()           - Load AI budget coach data
+   └── renderBudgetAI()         - Display budget health, insights, forecast
+
+📁 static/js/planner.js
+   └── updatePlannerSliderLabel() - Update slider percentage display
+   └── loadPlanner()              - Initialize planner with data
+   └── renderPlannerBaseline()    - Show current baseline stats
+   └── recomputePlanner()         - Calculate what-if scenario results
+
+📁 static/js/export-import.js
+   └── downloadData()  - Export expenses to CSV or Excel
+   └── importData()    - Import expenses from file upload
+
+📁 static/js/main.js
+   └── checkBillReminders()  - Show bill reminder notifications
+   └── Contact form handler  - Handle contact form (demo)
+   └── Initialize year span, date input
+   └── App startup (loadUser, checkBillReminders)
+
+================================================================================
+                                 OTHER FILES
+================================================================================
+
+📁 run.py
+   └── Launch script - starts backend and frontend servers
+   └── Opens browser automatically
+
+📁 requirements.txt
+   └── Python dependencies (flask, flask-cors)
+
+📁 lifeassist.db
+   └── SQLite database file (auto-created)
+
+================================================================================

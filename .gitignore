@@ -1,0 +1,60 @@
+# ==========================================
+# LifeAssist AI - Git Ignore
+# ==========================================
+
+# Database files (prevents personal user data & passwords from leaking)
+*.db
+*.sqlite
+*.sqlite3
+lifeassist.db
+
+# Environment variables & secrets (API keys, secret tokens)
+.env
+.env.*
+*.env
+secrets.json
+secrets.py
+credentials.json
+*.pem
+*.key
+*.cert
+
+# User exports & imports (prevents financial sheets from leaking)
+*.csv
+*.xlsx
+*.xls
+expenses.csv
+expenses.xlsx
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Logs & temporary files
+*.log
+*.tmp
+*.bak
+
+# IDE & Editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Operating System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
